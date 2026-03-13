@@ -1,0 +1,48 @@
+# Core framework
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.1
+
+# HTTP client
+httpx==0.28.1
+
+# Logging
+structlog==24.4.0
+
+# Database
+asyncpg==0.30.0
+sqlalchemy[asyncio]==2.0.36
+alembic==1.14.1
+
+# Redis
+redis[hiredis]==5.2.1
+
+# Vector DB (connects to the chromadb container over HTTP)
+chromadb==0.4.24
+
+# Text processing
+langchain-text-splitters==0.3.4
+
+# Agent framework
+langgraph==0.2.60
+
+# Task queue
+celery[redis]==5.4.0
+apscheduler==3.10.4
+
+# File handling
+python-multipart==0.0.20
+aiofiles==24.1.0
+PyMuPDF==1.25.3
+
+# Data analysis
+pandas==2.2.3
+numpy==1.26.4
+
+# Web scraping
+beautifulsoup4==4.12.3
+lxml==5.3.0
+
+# File system watcher (Goal OS v2)
+watchdog==4.0.1

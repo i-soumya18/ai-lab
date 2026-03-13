@@ -1,0 +1,137 @@
+services:
+  # Ollama is running locally on the host machine
+  # Docker containers will connect via host.docker.internal:11434
+  # To start: ollama serve
+  # To pull model: ollama pull nemotron-3-super:cloud
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: ailab-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ailab}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ailab}
+      POSTGRES_DB: ${POSTGRES_DB:-ailab}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - ailab-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ailab}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: ailab-redis
+    volumes:
+      - redis_data:/data
+    networks:
+      - ailab-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  chromadb:
+    image: chromadb/chroma:0.4.24
+    container_name: ailab-chromadb
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+    volumes:
+      - chroma_data:/chroma/chroma
+    networks:
+      - ailab-net
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c \"import http.client; conn = http.client.HTTPConnection('localhost', 8000); conn.request('GET', '/api/v1/heartbeat'); exit(0 if conn.getresponse().status == 200 else 1)\" 2>/dev/null || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: ailab-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      chromadb:
+        condition: service_healthy
+    volumes:
+      - ./outputs:/app/outputs
+      - ./data:/app/data
+      - ./templates:/app/templates
+      - ${WATCHED_PATHS_ROOT:-./data}:/app/watched
+    networks:
+      - ailab-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  celery_worker:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: ailab-celery
+    command: celery -A automation.celery_app worker --loglevel=info
+    env_file:
+      - .env
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - ailab-net
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ailab-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - ailab-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+networks:
+  ailab-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  chroma_data:

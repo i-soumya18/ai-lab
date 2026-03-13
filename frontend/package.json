@@ -1,0 +1,32 @@
+{
+  "name": "ai-lab-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.2.29",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "@tanstack/react-query": "5.62.9",
+    "zod": "3.23.8",
+    "clsx": "2.1.1",
+    "react-markdown": "9.0.1",
+    "remark-gfm": "4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.10",
+    "@types/react": "18.3.17",
+    "@types/react-dom": "18.3.5",
+    "typescript": "5.7.2",
+    "tailwindcss": "3.4.17",
+    "autoprefixer": "10.4.20",
+    "postcss": "8.4.49",
+    "eslint": "8.57.1",
+    "eslint-config-next": "14.2.29"
+  }
+}
