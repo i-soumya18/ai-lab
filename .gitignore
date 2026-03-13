@@ -1,0 +1,118 @@
+# AI Lab Project .gitignore
+
+# Dependencies
+node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+.conda/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
+# Environment variables (keep .env.example but ignore actual .env)
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Build artifacts
+dist/
+build/
+.coverage
+htmlcov/
+.tox/
+.nox/
+.cache
+*.egg-info/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Data files
+data/
+uploads/
+temp/
+tmp/
+
+# Model files (Ollama models are large)
+models/
+ollama/
+*.gguf
+*.ggml
+*.bin
+
+# ChromaDB
+chroma/
+*.chroma
+
+# Redis dump
+dump.rdb
+
+# Frontend specific
+.next/
+.out/
+.cache/
+next-env.d.ts
+
+# API specific
+api/__pycache__/
+agents/__pycache__/
+rag/__pycache__/
+memory/__pycache__
+goals/__pycache__
+safety/__pycache__
+automation/__pycache__
+voice/__pycache__
+models/__pycache__
+
+# Test coverage
+.coverage
+.coverage.*
+cover/
+coverage*
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Large files that shouldn't be version controlled
+*.zip
+*.tar.gz
+*.tar.bz2
+*.7z
+*.rar
+*.iso
+*.dmg
+*.pkg
+
+# Documentation builds
+docs/_build/
+site/
